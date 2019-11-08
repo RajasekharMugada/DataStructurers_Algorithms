@@ -1,7 +1,12 @@
+/*
+@author: Rajasekhar Mugada
+@brief : Binary search algorithm which works on increasing sorted array
+*/
+
 #include <iostream>
 using namespace std;
 
-//Binary search algorithm for a sorted array
+//Binary search algorithm for a sorted array(in increasing order)
 int binary_search(int * array, int len, int key)
 {
     int left = 0, right = 0, middle = 0;
