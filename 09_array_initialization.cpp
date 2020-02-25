@@ -76,7 +76,7 @@ void dynamic_arr_init(void)
 	{
 		arr_ptr[i] = i + 1;
 	}
-	cout << endl;
+
 	cout << "dynamic array: initialize the array to size 10 : " <<endl;
 	cout << "array address : " << &arr_ptr << " array : ";
 	for(i = 0; i < size; i++)
@@ -104,7 +104,7 @@ void dynamic_arr_init(void)
 	arr_ptr = arr_new_ptr;
 	arr_new_ptr = NULL;
 
-	cout << endl << "static array: resize the array to size 15 : " << endl;
+	cout << endl << "dynamic array: resize the array to size 15 : " << endl;
 	cout << "array address : " << &arr_ptr << " array : ";
 	for(i = 0; i < size_new; i++)
 	{
@@ -116,8 +116,9 @@ void dynamic_arr_init(void)
 int main(void)
 {
 	static_arr_init();
+	cout << endl;
+	cout << endl;
 	dynamic_arr_init();
 
 	return 0;
 }
-
