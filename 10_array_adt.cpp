@@ -38,11 +38,17 @@ public:
 	void append(int x);
 	void insert(int index, int x);
 	void delete_element_at(int index);
+	void insert_in_sorted_array(int x);
 
+	//searching techniques
 	int linear_search(int key);			//T(n) = O(n)
 	int binary_search(int key);			//T(n) = O(log(n))
 	int binary_search_recursive(int key, int l, int h);
-	void insert_sort();
+	//sorting techniques
+	void bubble_sort();					//T(n) = O(n2)
+	void selection_sort();				//T(n) = O(n2) //not implemented
+	void insert_sort();					//not implemented
+	void heap_sort();					//not implemented
 	int is_sorted();
 
 	int get(int index);
@@ -52,15 +58,15 @@ public:
 	int sum();
 	float avg();
 	void reverse();
-	void rearrange();
+	void rearrange();	//all -ve elements towards left and +ve ones towards right side
 
-	Array * merge(class Arr2);
+	Array * merge_sorted_arrays(Array arr2);	//Merge two sorted array data structures
 	Array * union_array(class Arr2);
 	Array * intersection(class Arr2);
 	Array * difference(class Arr2);
 
 private:
-	void swap(int *x, int *y);
+	void swap(int & x, int & y);
 
 };
 
@@ -123,6 +129,30 @@ void Array :: delete_element_at(int index)
 	}
 	length--;
 }
+
+void Array :: insert_in_sorted_array(int x)
+{
+	if(length == size)
+	{
+		return;
+	}
+
+	int i = length -1;
+
+	//Find the proper position for the given element from back side of the list
+	//Right shift all the list element which are greater than the given element
+	while(A[i] > x)
+	{
+		A[i+1] = A[i];
+		i--;
+	}
+
+	//Insert the given element at the desired location
+	A[i+1] = x;
+
+	length++;
+}
+
 
 int Array :: linear_search(int key)
 {
@@ -200,6 +230,46 @@ int Array :: binary_search_recursive(int key, int l, int h)
 	return -1; // not found
 }
 
+
+void Array :: bubble_sort()
+{
+	int i = 0, j = 0;
+	int flag_sorted = 0;
+
+	// number of scans over entire list
+	for(i = 0; i< length -1; i++)
+	{
+		flag_sorted = 1;
+
+		//number of comparisons in each scan
+		for (j = 0; j< length -1 - i; j++)
+		{
+			if(A[j] > A[j+1])
+			{
+				swap(A[j], A[j+1]);
+				flag_sorted = 0;
+			}
+		}
+
+		if(flag_sorted)
+		{
+			return;
+		}
+	}
+}
+
+
+int Array :: is_sorted()
+{
+	for (int i = 0; i< length -1; i++)
+	{
+		if(A[i] > A[i+1])
+			return 0;
+	}
+	return 1;
+}
+
+
 int Array :: get(int index)
 {
 	if(index >= length)
@@ -269,6 +339,87 @@ float Array :: avg()
 	return (float)sum()/length;
 }
 
+void Array :: swap(int &x, int &y)
+{
+	int t = x;
+	x = y;
+	y = t;
+}
+
+void Array :: reverse()
+{
+	if(length <= 1)
+	{
+		return;
+	}
+
+	int i = 0, j = length -1;
+	while(i < j)
+	{
+		swap(A[i], A[j]);
+		i++;
+		j--;
+	}
+}
+
+void Array :: rearrange()
+{
+	int i = 0, j = length -1;
+	while(i > j)
+	{
+		while(A[i] < 0)
+			i++;
+		while(A[j] > 0)
+			j--;
+		if(i < j)
+			swap(A[i], A[j]);
+	}
+}
+
+
+//Set operations
+Array * Array :: merge_sorted_arrays(Array arr2)
+{
+	int i, j, k;
+
+	Array * new_arr = new Array(length + arr2.length);
+
+	i = 0; //first array indexing
+	j = 0; //second array indexing
+	k = 0; //result array indexing
+
+	//merge sort
+	while(i < length && j < arr2.length)
+	{
+		if(A[i] < arr2.A[j])
+		{
+			new_arr->A[k] = A[i];
+			i++; k++;
+		}
+		else
+		{
+			new_arr->A[k] = arr2.A[j];
+			j++; k++;
+		}
+	}
+
+	while(i < length)
+	{
+		new_arr->A[k] = A[i];
+		i++; k++;
+	}
+
+	while(j < arr2.length)
+	{
+		new_arr->A[k] = arr2.A[j];
+		j++; k++;
+	}
+
+	new_arr->length = k;
+
+	return new_arr;
+}
+
 int main ()
 {
 	Array arr;
@@ -322,8 +473,40 @@ int main ()
 	cout << endl<< "Max val : " << arr.max();
 	cout << endl<< "Sum : " << arr.sum();
 	cout << endl<< "Avg : " << arr.avg();
+
+	//reverse
+	arr.display();
+	arr.reverse();
+	cout << endl<< "In reverse order : ";
+	arr.display();
+
+	//sort
+	cout << endl<< "Bubble sort : ";
+	arr.bubble_sort();
+	arr.display();
+
+	//insert an element in a sorted list
+	cout << endl<< "Insert 20 in the sorted list : ";
+	arr.insert_in_sorted_array(20);
+	arr.display();
+
+	//create a new array
+	Array arr2;
+	arr2.append(6);
+	arr2.append(10);
+	arr2.append(2);
+	arr2.append(100);
+	arr2.append(50);
+	arr2.bubble_sort();
+
+	//Merge sort two arrays
+	Array * arr3;
+
+	cout << endl << "Array 1 : " ;
+	arr.display();
+	cout << endl << "Array 2 : " ;
+	arr2.display();
+	arr3 = arr.merge_sorted_arrays(arr2);
+	cout << endl << "Merging Array 1 and Array 2 : ";
+	arr3->display();
 }
-
-
-
-
