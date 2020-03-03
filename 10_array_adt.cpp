@@ -26,7 +26,7 @@ public:
 		length = 0;
 		A = new int [size];
 	}
-	~Array()	//desctructor
+	~Array()	//destructor
 	{
 		delete [] A;
 		size = 0;
@@ -61,9 +61,9 @@ public:
 	void rearrange();	//all -ve elements towards left and +ve ones towards right side
 
 	Array * merge_sorted_arrays(Array arr2);	//Merge two sorted array data structures
-	Array * union_array(class Arr2);
-	Array * intersection(class Arr2);
-	Array * difference(class Arr2);
+	Array * union_array(Array arr2);
+	Array * intersection(Array arr2);
+	Array * difference(Array arr2);
 
 private:
 	void swap(int & x, int & y);
@@ -420,6 +420,152 @@ Array * Array :: merge_sorted_arrays(Array arr2)
 	return new_arr;
 }
 
+/*
+ * Union_array : Union on given arrays
+ * 1. The input arrays should be in sorted order
+ * 2. Create a new array and copy all the unique elements from the i/p arrays
+ * 3. Keep single copy of any common elements in both i/p arrays
+ * 4. ASSUMPTION: No duplicates in an array
+ */
+Array * Array ::  union_array(Array arr2)
+{
+	Array * arr = new Array(length + arr2.length);
+	int i = 0, j = 0, k = 0;
+
+	while(i < length && j < arr2.length)
+	{
+		if(A[i] < arr2.A[j])
+		{
+			if((k > 0) && (arr->A[k-1] == A[i]))	//keep single copy of duplicate elements
+				i++;
+			else
+				arr->A[k++] = A[i++];
+		}
+		else if (A[i] > arr2.A[j])
+		{
+			if((k > 0) && (arr->A[k-1] == arr2.A[j]))	//keep single copy of duplicate elements
+				j++;
+			else
+				arr->A[k++] = arr2.A[j++];
+		}
+		else//A[i] == arr2.A[j]
+		{
+			if((k > 0) && (arr->A[k-1] == A[i]))	//keep single copy of duplicate elements
+			{
+				i++; j++;
+			}
+			else
+			{
+				arr->A[k++] = A[i++];
+				j++;
+			}
+		}
+	}
+
+	while(i < length)
+	{
+		if((k > 0) && (arr->A[k-1] == A[i]))	//keep single copy of duplicate elements
+			i++;
+		else
+			arr->A[k++] = A[i++];
+	}
+
+	while(j < arr2.length)
+	{
+		if((k > 0) && (arr->A[k-1] == arr2.A[j]))	//keep single copy of duplicate elements
+			j++;
+		else
+			arr->A[k++] = arr2.A[j++];
+	}
+
+	arr->length = k;
+
+	return arr;
+}
+
+/*
+ * intersection :
+ * 1. I/p arrays should be in sorted order
+ * 2. choose common elements from the given i/p arrays
+ */
+Array * Array :: intersection(Array arr2)
+{
+	Array * arr = new Array(length + arr2.length);
+	int i = 0, j = 0, k = 0;
+
+	while(i < length && j < arr2.length)
+	{
+		if(A[i] < arr2.A[j])
+		{
+			i++;
+		}
+		else if (A[i] > arr2.A[j])
+		{
+			j++;
+		}
+		if(A[i] == arr2.A[j])
+		{
+			if((k > 0) && (arr->A[k-1] == A[i]))	//keep single copy of duplicate elements
+			{
+				i++; j++;
+			}
+			else
+			{
+				arr->A[k++] = A[i++];
+				j++;
+			}
+		}
+	}
+
+	arr->length = k;
+	return arr;
+}
+
+/*
+ * difference :
+ * 1. I/p arrays should be in sorted order
+ * 2. Ignore common elements from the first array
+ */
+Array * Array :: difference(Array arr2)
+{
+	Array * arr = new Array(length + arr2.length);
+	int i = 0, j = 0, k = 0;
+
+	while(i < length && j < arr2.length)
+	{
+		if(A[i] < arr2.A[j])
+		{
+			if((k > 0) && (arr->A[k-1] == A[i]))	//keep single copy of duplicate elements
+				i++;
+			else if( i > 0 && A[i] == A[i-1])
+			{
+				i++;
+			}
+			else
+				arr->A[k++] = A[i++];
+		}
+		else if (A[i] > arr2.A[j])
+		{
+			j++;
+		}
+		else//A[i] == arr2.A[j]
+		{
+			i++; j++;
+		}
+	}
+
+	while(i < length)
+	{
+		if((k > 0) && (arr->A[k-1] == A[i]))	//keep single copy of duplicate elements
+			i++;
+		else
+			arr->A[k++] = A[i++];
+	}
+
+	arr->length = k;
+	return arr;
+}
+
 int main ()
 {
 	Array arr;
@@ -433,7 +579,7 @@ int main ()
 	arr.append(13);
 	arr.append(21);
 	arr.append(22);
-	arr.append(23);
+	arr.append(22);
 	arr.display();
 	//Insert an element
 	arr.insert(1, 1000);
@@ -493,20 +639,36 @@ int main ()
 	//create a new array
 	Array arr2;
 	arr2.append(6);
-	arr2.append(10);
+	arr2.append(6);
 	arr2.append(2);
 	arr2.append(100);
 	arr2.append(50);
+	arr2.append(22);
+	arr2.append(13);
 	arr2.bubble_sort();
 
 	//Merge sort two arrays
 	Array * arr3;
-
 	cout << endl << "Array 1 : " ;
 	arr.display();
 	cout << endl << "Array 2 : " ;
 	arr2.display();
 	arr3 = arr.merge_sorted_arrays(arr2);
 	cout << endl << "Merging Array 1 and Array 2 : ";
+	arr3->display();
+
+	//Union operation
+	arr3 = arr.union_array(arr2);
+	cout << endl << "Union of Array 1 and Array 2 : ";
+	arr3->display();
+
+	//Intersection operation
+	arr3 = arr.intersection(arr2);
+	cout << endl << "Intersection of Array 1 and Array 2 : ";
+	arr3->display();
+
+	//Difference operation
+	arr3 = arr.difference(arr2);
+	cout << endl << "Difference of Array 1 and Array 2 : ";
 	arr3->display();
 }
