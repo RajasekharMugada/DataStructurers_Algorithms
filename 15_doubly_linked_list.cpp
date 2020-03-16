@@ -35,6 +35,7 @@ public:
 	int length();
 	void insert(int index, int x);
 	void delete_elem(int index);
+	void reverse();
 
 };
 
@@ -212,6 +213,27 @@ void doubly_ll::delete_elem(int index)
 	}
 }
 
+void doubly_ll::reverse()
+{
+	//reverse links
+	node * p = first, *q;
+
+	while(p->next != NULL)
+	{
+		q = p;
+		p = p->next;
+
+		q->next = q->prev;
+		q->prev = p;
+	}
+
+	//last node becomes first node
+	p->next = q;
+	p->prev = NULL;
+	first = p;
+
+}
+
 int main()
 {
 	//create doubly linked  linked list
@@ -234,8 +256,11 @@ int main()
 	cout << endl << "Inserting 10 at index 1";
 	dll.insert(1, 10);
 	dll.display();
-	//length
-	cout << endl << "List length : " << dll.length();
+
+	//reverse list
+	cout << endl << "Reversing the list";
+	dll.reverse();
+	dll.display();
 
 	//deleting an element from the given location
 	dll.delete_elem(0);
