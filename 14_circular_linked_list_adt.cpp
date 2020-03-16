@@ -185,7 +185,7 @@ void circular_ll::delete_elem(int index)
 	}
 
 	//only single element in the list
-	if(len == 0)
+	if(len == 1)
 	{
 		delete first;
 		first = NULL;
