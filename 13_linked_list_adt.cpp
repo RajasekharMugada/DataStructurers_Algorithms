@@ -10,44 +10,13 @@
 #include <iostream>
 using namespace std;
 
-class node
+#include "13_linked_list_adt.h"
+
+
+linked_list :: linked_list()
 {
-public:
-	int data;
-	node * next;
-};
-
-class linked_list
-{
-private:
-	node * first;
-
-public:
-	linked_list(){ first = NULL;};
-	linked_list(int A[], int n);	//Convert array to linked list
-	~linked_list();
-
-	void display();					//Display linked lest elements
-	void display_rec();				//Display elements - in recursive method
-	void insert(int index, int x);	//insert a given element in the given position
-	int delete_element(int index);	//delete an element from the given position
-	int length();					//number of elements in the linked list
-
-	int sum();	//sum of all elements in a linked list
-	int max();
-	int min();
-	int search(int key);	//linear search //T(n) = O(n)
-
-	bool is_sorted();
-	void remove_duplicates();
-	void reverse(); //reverse list
-	void rec_reverse(); //recursive reverse
-	linked_list *  merge(linked_list list2);
-	bool check_loop(); //check there is a loop or not in the list
-
-	int middle_element();
-};
-
+	first = NULL;
+}
 
 
 //Convert given array in to linked list
@@ -334,37 +303,30 @@ void linked_list::remove_duplicates()
  */
 void linked_list::reverse()
 {
-	node *n1, *n2, *n3;
+	//i/p : n3->n2->n1    o/p: n3<-n2<-n1
+	node *n1 = first, *n2 = NULL, *n3 =NULL;
 
-	//single or no element in the list
-	if(first == NULL || first -> next == NULL)
-	{
-		return;
-	}
-
-	n1 = first;
-	n2 = n1->next;
-	n3 = n2->next;
-
-	n1->next = NULL; //first node becomes last
-
-	//Initial list:
+	//1. Initial list:
 	// first-> x-> x-> x-> x-> x-> x->NULL
 
-	//At any point of time:
-	// first <-x <-x <-p  q-> r-> x-> NULL
-	while(n3 != NULL)
+	//2. At any point of time:
+	// last <-x <-x <-p  q-> r-> x-> NULL
+	while(n1 != NULL)
 	{
-		n2->next = n1; //reverse a link
-		n1 = n2;
-		n2 = n3;
-		n3 = n3->next;
+		//move sliding pointers to next node
+		n3 = n2;
+		n2 = n1;
+		n1 = n1->next;
+
+		//reverse a link
+		n2->next = n3;
 	}
-	//last link
-	// f <-x <-x <-x <-p    q->r(NULL)
-	n2->next = n1;
+	//3. last link
+	// last <-x <-x <-x <-x <-p <-q  r=(NULL)
 	first = n2;
 }
+
+
 
 //Merging two sorted lists
 linked_list * linked_list::merge(linked_list list2)
@@ -399,6 +361,63 @@ linked_list * linked_list::merge(linked_list list2)
 	}
 	return list3;
 }
+
+/*
+ * Merging two sorted lists - in place
+ * only links get updated
+ */
+
+void linked_list::merge_inplace(linked_list & list2)
+{
+	node * p = first, *q = list2.first, *r = NULL;
+
+
+	//first node
+	if(p->data <= q->data)
+	{
+		first = p;
+		r = p;		// sorted list
+		p = p->next;
+	}
+	else
+	{
+		first = q;
+		r = q;		// sorted list
+		q = q->next;
+	}
+
+	while(p != NULL && q != NULL)
+	{
+		if(p->data <= q->data)
+		{
+			r->next = p;
+			r = p;
+			p = p->next;
+		}
+		else
+		{
+			r->next = q;
+			r = q;
+			q = q->next;
+		}
+	}
+	while(p != NULL)
+	{
+		r->next = p;
+		r = p;
+		p = p->next;
+	}
+	while(q != NULL)
+	{
+		r->next = q;
+		r = q;
+		q = q->next;
+	}
+
+	r->next = NULL;
+}
+
+
 
 /*
  * Linked list with a loop - doen not have a last node (next node will never be NULL)
@@ -462,7 +481,7 @@ int linked_list::middle_element()
 	return p->data;;
 }
 
-int main()
+int main_ll()
 {
 	int A[] = {1, 2, 3, 4};
 
@@ -555,6 +574,16 @@ int main()
 	cout << endl << "Merging two lists : ";
 	list3 = list.merge(list2);
 	list3->display();
+
+	cout << endl << "List 1: ";
+	list.display();
+	cout << endl << "List 2: ";
+	list2.display();
+
+	//Merging two lists  - inplace
+	cout << endl << "Merging two lists - in place: ";
+	list.merge_inplace(list2);
+	list.display();
 
 	//check loop in the list
 	list.display();
